@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load formato %}
+{% block titulo %}{% if calificacion %}Editar calificación{% else %}Nueva calificación{% endif %}{% endblock %}
+{% block contenido %}
+<div>
+  <a href="{% url 'calificaciones:lista' %}" style="font-weight:600;text-decoration:none;font-size:14px">← Calificaciones</a>
+  <h1 style="margin-top:6px">{% if calificacion %}Editar calificación{% else %}Nueva calificación{% endif %}</h1>
+  <div class="apagado" style="margin-top:4px">Los factores se calculan a partir de los montos. Si la suma de las columnas {{ columnas_regla.0 }} a {{ columnas_regla.1 }} supera 1, no se puede guardar.</div>
+</div>
+
+<form method="post" class="dos-columnas">
+  {% csrf_token %}
+  <div class="fija">
+    <div class="tarjeta" style="display:flex;flex-direction:column;gap:14px">
+      <p class="titulo-seccion">1 · Identificación</p>
+      <div class="campo"><label for="ejercicio">Ejercicio</label>
+        <input id="ejercicio" type="text" name="ejercicio" value="{{ datos.ejercicio }}" {% if calificacion %}readonly{% endif %}></div>
+      <div class="campo"><label for="mercado">Mercado</label>
+        <select id="mercado" name="mercado" {% if calificacion %}disabled{% endif %}>
+          {% for valor, texto in mercados %}<option value="{{ valor }}" {% if datos.mercado == valor %}selected{% endif %}>{{ texto }}</option>{% endfor %}
+        </select></div>
+      <div class="campo"><label for="instrumento">Instrumento</label>
+        <input id="instrumento" type="text" name="instrumento" value="{{ datos.instrumento }}" {% if calificacion %}readonly{% endif %}></div>
+      <div class="campo"><label for="secuencia">Secuencia de evento</label>
+        <input id="secuencia" type="text" name="secuencia" value="{{ datos.secuencia }}" {% if calificacion %}readonly{% endif %}></div>
+      <div class="campo"><label for="origen">Origen del dato</label>
+        <select id="origen" name="origen">
+          {% for valor, texto in origenes %}<option value="{{ valor }}" {% if datos.origen == valor %}selected{% endif %}>{{ texto }}</option>{% endfor %}
+        </select>
+        <small class="apagado" style="font-size:12px;line-height:1.45">Si existe dato de Bolsa y del corredor para el mismo instrumento y periodo, prevalece el del corredor.</small></div>
+      <div class="etiqueta" style="border-radius:8px;padding:10px 12px;font-weight:400;font-size:13px;line-height:1.5">
+        <strong>Llave de la calificación:</strong><br>ejercicio · mercado · instrumento · secuencia.<br>Si ya existe, se actualiza en vez de duplicarse.
+      </div>
+    </div>
+  </div>
+
+  <div class="flexible">
+    <div class="tarjeta">
+      <p class="titulo-seccion">2 · Montos y factores</p>
+      <div class="campo" style="margin-bottom:12px;max-width:320px">
+        <label for="monto_base">Monto base (divisor) — opcional</label>
+        <input id="monto_base" type="text" inputmode="decimal" name="monto_base" value="{{ base_txt }}" placeholder="Vacío: suma de los montos">
+      </div>
+      <table class="tabla" style="border:0">
+        <thead><tr><th>Columna</th><th>Monto ($)</th><th>Factor</th></tr></thead>
+        <tbody>
+        {% for f in filas_principales %}
+          <tr><td><strong>Col. {{ f.columna }}</strong></td>
+              <td><input type="text" inputmode="decimal" name="monto_{{ f.columna }}" value="{{ f.monto }}" aria-label="Monto columna {{ f.columna }}"></td>
+              <td class="mono">{{ f.factor|coma }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <details style="margin-top:10px">
+        <summary style="cursor:pointer;font-size:14px;font-weight:600">Más columnas ({{ columnas_regla.1|add:1 }} a 37)</summary>
+        <table class="tabla" style="border:0">
+          <tbody>
+          {% for f in filas_extra %}
+            <tr><td><strong>Col. {{ f.columna }}</strong></td>
+                <td><input type="text" inputmode="decimal" name="monto_{{ f.columna }}" value="{{ f.monto }}" aria-label="Monto columna {{ f.columna }}"></td>
+                <td class="mono">{{ f.factor|coma }}</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </details>
+    </div>
+
+    {% if errores %}
+    <div class="panel-mal" role="alert">
+      <h2>{% if bloqueado %}Guardado bloqueado: la suma es {{ suma_texto|coma }} (mayor que 1){% else %}Revisa estos puntos{% endif %}</h2>
+      <ul>{% for e in errores %}<li>{{ e }}</li>{% endfor %}</ul>
+    </div>
+    {% elif resultado %}
+    <div class="panel-ok" role="status">
+      <h2>Válida: la suma de las columnas {{ columnas_regla.0 }} a {{ columnas_regla.1 }} es {{ suma_texto|coma }} (menor o igual a 1)</h2>
+      <p>Cumple la regla de suma. Ya puedes guardar la calificación.</p>
+    </div>
+    {% endif %}
+
+    <p class="apagado" style="margin:0;font-size:13px">Los factores se {% if modo_redondeo == "truncar" %}truncan{% else %}redondean{% endif %} a ocho decimales (definición pendiente de confirmar con el cliente).</p>
+
+    <div class="acciones" style="justify-content:flex-end">
+      <a class="boton neutro" href="{% url 'calificaciones:lista' %}">Cancelar</a>
+      <button class="boton sec" type="submit" name="accion" value="calcular">Calcular factores</button>
+      <button class="boton" type="submit" name="accion" value="guardar">Guardar calificación</button>
+    </div>
+  </div>
+</form>
+{% endblock %}

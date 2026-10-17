@@ -1,0 +1,41 @@
+{% load static %}<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Calificaciones Tributarias{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+{% block body %}
+<div class="shell">
+  <aside class="lateral">
+    <div class="marca"><span class="logo"></span><span>Calificaciones<br>Tributarias</span></div>
+    {% if user.perfil %}<div class="corredora">{{ user.perfil.corredora.nombre }}</div>{% endif %}
+    <nav aria-label="Principal">
+      <a href="/calificaciones/" class="{% if seccion == 'calificaciones' %}activo{% endif %}">Calificaciones</a>
+      {% if user.perfil.puede_editar %}<a href="/carga/" class="{% if seccion == 'carga' %}activo{% endif %}">Carga masiva</a>{% endif %}
+      {% if user.perfil.puede_ver_bitacora %}<a href="/bitacora/" class="{% if seccion == 'bitacora' %}activo{% endif %}">Bitácora</a>{% endif %}
+      {% if user.perfil.puede_gestionar_usuarios %}<a href="/usuarios/" class="{% if seccion == 'usuarios' %}activo{% endif %}">Usuarios</a>{% endif %}
+    </nav>
+    <div class="espacio"></div>
+    <div class="sesion">
+      <strong>{{ user.get_full_name|default:user.username }}</strong>
+      <small>{{ user.perfil.get_rol_display }}</small>
+      <form method="post" action="{% url 'cuentas:salir' %}">{% csrf_token %}<button type="submit">Cerrar sesión</button></form>
+    </div>
+  </aside>
+  <main class="principal">
+    {% if messages %}
+    <div class="avisos">
+      {% for mensaje in messages %}<div class="aviso {{ mensaje.tags }}" role="status">{{ mensaje }}</div>{% endfor %}
+    </div>
+    {% endif %}
+    {% block contenido %}{% endblock %}
+  </main>
+</div>
+{% endblock %}
+</body>
+</html>

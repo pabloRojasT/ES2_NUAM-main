@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block titulo %}Acceso denegado{% endblock %}
+{% block contenido %}
+<div class="panel-mal">
+  <h2>Acceso denegado</h2>
+  <p>{{ exception|default:"No tienes permiso para hacer esto." }}</p>
+  <p>El intento quedó registrado en la bitácora.</p>
+</div>
+<div><a class="boton sec" href="/calificaciones/">Volver a Calificaciones</a></div>
+{% endblock %}

@@ -1,0 +1,107 @@
+/* Estilos del Mantenedor de Calificaciones Tributarias (mismo look que el prototipo). */
+:root {
+  --tinta: #1b1f24;
+  --tinta-suave: #3d4650;
+  --apagado: #5b6470;
+  --fondo: #f4f3ef;
+  --borde: #dad7cf;
+  --marca: #0f4c5c;
+  --marca-oscura: #0f2e38;
+  --marca-clara: #e3eef0;
+  --ok-fondo: #e4f3ea;
+  --ok-borde: #9bd1b1;
+  --ok-texto: #14532d;
+  --mal-fondo: #fce8e6;
+  --mal-borde: #f1a9a2;
+  --mal-texto: #7a1a12;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; color: var(--tinta); background: var(--fondo); }
+a { color: var(--marca); }
+h1 { margin: 0; font-size: 28px; font-weight: 600; }
+.mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+.apagado { color: var(--apagado); font-size: 14px; }
+
+/* Estructura */
+.shell { display: flex; min-height: 100vh; flex-wrap: wrap; }
+.lateral { width: 232px; flex-shrink: 0; background: var(--marca-oscura); color: #fff; display: flex; flex-direction: column; padding: 24px 14px; gap: 6px; }
+.lateral .marca { display: flex; align-items: center; gap: 10px; padding: 0 6px; font-weight: 600; line-height: 1.2; }
+.lateral .logo { width: 28px; height: 28px; border-radius: 7px; background: #7cc4d0; }
+.lateral .corredora { font-size: 12px; color: #a9c4cb; padding: 10px 6px 18px; }
+.lateral nav { display: flex; flex-direction: column; gap: 6px; }
+.lateral nav a { display: block; padding: 10px 12px; border-radius: 8px; color: #e6f1f3; text-decoration: none; font-size: 14px; }
+.lateral nav a:hover { background: #18414e; }
+.lateral nav a.activo { background: #1f4b59; font-weight: 600; }
+.lateral .espacio { flex: 1; }
+.lateral .sesion { padding: 12px 8px; border-top: 1px solid #285562; font-size: 14px; }
+.lateral .sesion small { display: block; color: #a9c4cb; font-size: 12px; margin-bottom: 8px; }
+.lateral .sesion button { background: none; border: 0; padding: 0; color: #fff; text-decoration: underline; font-size: 13px; cursor: pointer; font-family: inherit; }
+.principal { flex: 1; min-width: 0; padding: 32px 40px; display: flex; flex-direction: column; gap: 18px; }
+.encabezado { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.acciones { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* Componentes */
+.tarjeta { background: #fff; border: 1px solid var(--borde); border-radius: 12px; padding: 20px; }
+.titulo-seccion { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--marca); font-weight: 600; margin: 0 0 10px; }
+.boton, button.boton { display: inline-flex; align-items: center; justify-content: center; height: 42px; padding: 0 18px; border-radius: 8px; background: var(--marca); color: #fff; border: 1.5px solid var(--marca); font: 600 15px inherit; font-family: inherit; text-decoration: none; cursor: pointer; }
+.boton.sec { background: #fff; color: var(--marca); }
+.boton.neutro { background: #fff; color: var(--tinta); border-color: #b9b5ab; }
+.boton.peligro { background: #b42318; border-color: #b42318; }
+.boton:disabled { background: #d8d5cc; border-color: #d8d5cc; color: var(--apagado); cursor: not-allowed; }
+.etiqueta { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 999px; font-weight: 600; background: var(--marca-clara); color: #0b3a47; }
+.etiqueta.gris { background: #eceae4; color: var(--tinta-suave); }
+.etiqueta.alerta { background: var(--mal-fondo); color: var(--mal-texto); }
+.etiqueta.aviso { background: #fbf0d9; color: #6b4400; }
+
+.avisos { display: flex; flex-direction: column; gap: 8px; }
+.aviso { padding: 12px 16px; border-radius: 10px; font-size: 14px; border: 1px solid var(--ok-borde); background: var(--ok-fondo); color: var(--ok-texto); }
+.aviso.error { border-color: var(--mal-borde); background: var(--mal-fondo); color: var(--mal-texto); }
+.panel-ok, .panel-mal { border-radius: 12px; padding: 16px 20px; }
+.panel-ok { background: var(--ok-fondo); border: 1px solid var(--ok-borde); color: var(--ok-texto); }
+.panel-mal { background: var(--mal-fondo); border: 1px solid var(--mal-borde); color: var(--mal-texto); }
+.panel-ok h2, .panel-mal h2 { margin: 0 0 4px; font-size: 16px; }
+.panel-ok p, .panel-mal p, .panel-mal ul { margin: 4px 0 0; font-size: 14px; line-height: 1.5; }
+
+/* Formularios */
+label { font-size: 13px; font-weight: 500; color: var(--tinta-suave); }
+input[type=text], input[type=email], input[type=password], input[type=number], input[type=file], select { height: 40px; width: 100%; border: 1px solid #b9b5ab; border-radius: 8px; padding: 0 10px; font: 14px inherit; font-family: inherit; background: #fff; color: var(--tinta); }
+input[type=file] { height: auto; padding: 8px 10px; }
+input:focus, select:focus, button:focus-visible, a:focus-visible { outline: 2px solid var(--marca); outline-offset: 1px; }
+input[readonly], select[disabled] { background: #eceae4; }
+.campo { display: flex; flex-direction: column; gap: 4px; }
+.filtros { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
+.filtros .campo { min-width: 150px; }
+.errorlist { color: var(--mal-texto); font-size: 13px; padding-left: 18px; margin: 4px 0; }
+
+/* Tablas */
+.tabla { width: 100%; border-collapse: collapse; font-size: 14px; background: #fff; }
+.contenedor-tabla { background: #fff; border: 1px solid var(--borde); border-radius: 12px; overflow-x: auto; }
+.tabla th { text-align: left; background: var(--fondo); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--tinta-suave); padding: 12px 16px; }
+.tabla td { padding: 12px 16px; border-top: 1px solid #efede7; vertical-align: middle; }
+.tabla tr.fila-error td { background: #fef4f3; }
+.tabla a.peligro, .tabla button.peligro { color: #b42318; font-weight: 600; background: none; border: 0; padding: 0; font: inherit; cursor: pointer; text-decoration: none; }
+.cifras { display: flex; gap: 14px; flex-wrap: wrap; }
+.cifra { flex: 1; min-width: 160px; background: #fff; border: 1px solid var(--borde); border-radius: 12px; padding: 14px 18px; }
+.cifra b { display: block; font-size: 28px; font-weight: 600; }
+.cifra.ok { background: #f1faf4; border-color: var(--ok-borde); color: var(--ok-texto); }
+.cifra.mal { background: #fef4f3; border-color: var(--mal-borde); color: var(--mal-texto); }
+.dos-columnas { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
+.dos-columnas > .fija { width: 360px; max-width: 100%; display: flex; flex-direction: column; gap: 14px; }
+.dos-columnas > .flexible { flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 16px; }
+.pie-tabla { font-size: 13px; color: var(--apagado); }
+.paginas { display: flex; gap: 12px; font-size: 14px; align-items: center; }
+
+/* Acceso */
+.acceso { display: flex; min-height: 100vh; flex-wrap: wrap; }
+.acceso .portada { flex: 1; min-width: 320px; background: var(--marca-oscura); color: #fff; padding: 64px; display: flex; flex-direction: column; justify-content: space-between; gap: 32px; }
+.acceso .portada h1 { font-size: 36px; line-height: 1.15; max-width: 460px; }
+.acceso .portada p { color: #c7dce1; line-height: 1.6; max-width: 460px; }
+.acceso .formulario { flex: 1; min-width: 320px; display: flex; align-items: center; justify-content: center; padding: 48px 24px; }
+.acceso form { width: 380px; max-width: 100%; display: flex; flex-direction: column; gap: 18px; }
+
+@media (max-width: 720px) {
+  .lateral { width: 100%; padding: 16px; }
+  .lateral nav { flex-direction: row; flex-wrap: wrap; }
+  .principal { padding: 20px 16px; }
+}

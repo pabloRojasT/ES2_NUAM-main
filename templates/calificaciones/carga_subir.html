@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block titulo %}Carga masiva{% endblock %}
+{% block contenido %}
+<div>
+  <h1>Carga masiva de calificaciones</h1>
+  <div class="apagado" style="margin-top:4px">Revisa fila por fila antes de cargar. Una fila con error no cancela el resto del archivo.</div>
+</div>
+<div class="acciones">
+  <span class="etiqueta" style="padding:10px 16px;font-size:14px;background:#0f4c5c;color:#fff">1 · Seleccionar archivo</span>
+  <span class="etiqueta gris" style="padding:10px 16px;font-size:14px">2 · Vista previa</span>
+  <span class="etiqueta gris" style="padding:10px 16px;font-size:14px">3 · Resultado</span>
+</div>
+
+<form method="post" enctype="multipart/form-data" class="tarjeta" style="display:flex;flex-direction:column;gap:14px;max-width:640px">
+  {% csrf_token %}
+  <p class="titulo-seccion">Archivo CSV</p>
+  <div class="campo"><label for="archivo">Selecciona un archivo .csv</label>
+    <input id="archivo" type="file" name="archivo" accept=".csv,text/csv" required></div>
+  <p class="apagado" style="margin:0;line-height:1.5">Cada fila es una calificación. La llave es ejercicio, mercado, instrumento y secuencia de evento: si ya existe, la fila actualiza ese registro y no crea un duplicado.</p>
+  <div class="acciones">
+    <button class="boton" type="submit">Ver vista previa</button>
+    <a class="boton sec" href="{% url 'calificaciones:carga_plantilla' %}">Descargar plantilla</a>
+  </div>
+</form>
+{% endblock %}

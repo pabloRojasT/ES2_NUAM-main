@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block titulo %}Iniciar sesión{% endblock %}
+{% block body %}
+<div class="acceso">
+  <section class="portada">
+    <div class="marca" style="display:flex;align-items:center;gap:12px;font-weight:600;font-size:18px"><span class="logo" style="width:32px;height:32px;border-radius:8px;background:#7cc4d0"></span>Calificaciones Tributarias</div>
+    <div>
+      <h1>Un solo lugar para calcular y declarar con respaldo.</h1>
+      <p>Los datos de cada calificación, el cálculo de sus factores y el registro de quién hizo qué, sin planillas paralelas.</p>
+    </div>
+    <small style="color:#a9c4cb">Proyecto Integrado TIHI43 · Equipo 1</small>
+  </section>
+  <section class="formulario">
+    <form method="post">
+      {% csrf_token %}
+      <div>
+        <h2 style="margin:0 0 6px;font-size:26px">Iniciar sesión</h2>
+        <div class="apagado">Accedes solo a los datos de tu corredora.</div>
+      </div>
+      {% if form.errors %}<div class="aviso error" role="alert">Usuario o contraseña incorrectos.</div>{% endif %}
+      <div class="campo"><label for="{{ form.username.id_for_label }}">Usuario</label>{{ form.username }}</div>
+      <div class="campo"><label for="{{ form.password.id_for_label }}">Contraseña</label>{{ form.password }}</div>
+      <input type="hidden" name="next" value="{{ next }}">
+      <button class="boton" type="submit" style="height:48px">Ingresar</button>
+      <p class="apagado" style="border-top:1px solid #dad7cf;padding-top:16px;margin:0;line-height:1.5">Tu sesión se cierra por inactividad. Cada ingreso queda registrado en la bitácora.</p>
+    </form>
+  </section>
+</div>
+{% endblock %}

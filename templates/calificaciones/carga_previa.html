@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block titulo %}Vista previa de la carga{% endblock %}
+{% block contenido %}
+<div>
+  <h1>Vista previa de la carga</h1>
+  <div class="apagado" style="margin-top:4px">Archivo: <strong>{{ nombre }}</strong>. Todavía no se guardó nada.</div>
+</div>
+<div class="acciones">
+  <span class="etiqueta gris" style="padding:10px 16px;font-size:14px">1 · Seleccionar archivo</span>
+  <span class="etiqueta" style="padding:10px 16px;font-size:14px;background:#0f4c5c;color:#fff">2 · Vista previa</span>
+  <span class="etiqueta gris" style="padding:10px 16px;font-size:14px">3 · Resultado</span>
+</div>
+
+<div class="cifras">
+  <div class="cifra">Filas leídas<b>{{ total }}</b></div>
+  <div class="cifra ok">Válidas: se cargarán<b>{{ validas }}</b></div>
+  <div class="cifra mal">Con error: se rechazan<b>{{ con_error }}</b></div>
+</div>
+
+<div>
+  {% if solo_errores %}<a href="{% url 'calificaciones:carga_previa' %}">Ver todas las filas</a>
+  {% else %}<a href="?errores=1">Ver solo las filas con error</a>{% endif %}
+</div>
+
+<div class="contenedor-tabla">
+  <table class="tabla">
+    <thead><tr><th>Fila</th><th>Mercado</th><th>Instrumento</th><th>Sec.</th><th>Estado</th><th>Motivo</th></tr></thead>
+    <tbody>
+    {% for f in filas %}
+      <tr {% if f.error %}class="fila-error"{% endif %}>
+        <td class="mono">{{ f.numero }}</td>
+        <td>{{ f.mercado }}</td>
+        <td><strong>{{ f.instrumento|default:"—" }}</strong></td>
+        <td>{{ f.secuencia }}</td>
+        <td>{% if f.error %}<strong style="color:#7a1a12">Con error</strong>{% else %}<strong style="color:#14532d">Válida</strong>{% endif %}</td>
+        <td>{{ f.error|default:"—" }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div class="pie-tabla">Se muestran {{ filas|length }} de {{ total }} filas (máximo 200 en pantalla).</div>
+
+<form method="post" action="{% url 'calificaciones:carga_confirmar' %}" class="acciones" style="justify-content:flex-end">
+  {% csrf_token %}
+  <a class="boton neutro" href="{% url 'calificaciones:carga' %}">Cancelar</a>
+  <button class="boton" type="submit" {% if validas == 0 %}disabled{% endif %}>Cargar {{ validas }} filas válidas</button>
+</form>
+{% endblock %}

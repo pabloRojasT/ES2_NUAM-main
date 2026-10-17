@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block titulo %}Resultado de la carga{% endblock %}
+{% block contenido %}
+<div>
+  <h1>Resultado de la carga</h1>
+</div>
+<div class="acciones">
+  <span class="etiqueta gris" style="padding:10px 16px;font-size:14px">1 · Seleccionar archivo</span>
+  <span class="etiqueta gris" style="padding:10px 16px;font-size:14px">2 · Vista previa</span>
+  <span class="etiqueta" style="padding:10px 16px;font-size:14px;background:#0f4c5c;color:#fff">3 · Resultado</span>
+</div>
+
+<div class="panel-ok" role="status">
+  <h2>Carga terminada: {{ procesadas }} filas procesadas, {{ resultado.rechazadas|length }} rechazadas</h2>
+  <p>{{ resultado.nuevas }} calificaciones nuevas, {{ resultado.actualizadas }} actualizadas porque su llave ya existía y {{ resultado.sin_cambios }} sin cambios. Sin duplicados: si cargas este mismo archivo otra vez, el total de registros no cambia.</p>
+</div>
+
+{% if resultado.rechazadas %}
+<div class="tarjeta">
+  <p class="titulo-seccion" style="color:#7a1a12">Filas rechazadas</p>
+  <ul style="margin:0;padding-left:18px;line-height:1.9;font-size:14px">
+    {% for numero, motivo in resultado.rechazadas %}<li><strong>Fila {{ numero }}</strong> · {{ motivo }}.</li>{% endfor %}
+  </ul>
+  <p class="apagado" style="margin:10px 0 0">Corrige estas filas en tu archivo y cárgalo de nuevo: solo se procesarán las que cambien.</p>
+</div>
+{% endif %}
+
+<div class="panel-ok" style="background:var(--marca-clara);border-color:var(--marca-clara);color:#0b3a47">
+  <p style="margin:0">Registrado en la bitácora: 1 carga masiva y una operación por cada calificación creada o actualizada, con tu usuario, fecha, hora y origen «Carga masiva».</p>
+</div>
+
+<div class="acciones">
+  <a class="boton" href="{% url 'calificaciones:lista' %}">Ver calificaciones</a>
+  <a class="boton neutro" href="{% url 'calificaciones:carga' %}">Cargar otro archivo</a>
+</div>
+{% endblock %}

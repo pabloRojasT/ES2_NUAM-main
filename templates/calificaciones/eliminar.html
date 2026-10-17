@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block titulo %}Eliminar calificación{% endblock %}
+{% block contenido %}
+<h1>¿Eliminar {{ calificacion.instrumento }} (sec. {{ calificacion.secuencia }})?</h1>
+<div class="tarjeta" style="max-width:560px;display:flex;flex-direction:column;gap:14px">
+  <p style="margin:0;line-height:1.55">{{ calificacion.ejercicio }} · {{ calificacion.get_mercado_display }}.</p>
+  <p style="margin:0;line-height:1.55">La calificación dejará de mostrarse en las consultas, pero no se borra: se conserva y la operación queda en la bitácora con tu usuario, fecha y hora.</p>
+  <form method="post" class="acciones" style="justify-content:flex-end">
+    {% csrf_token %}
+    <a class="boton neutro" href="{% url 'calificaciones:lista' %}">Cancelar</a>
+    <button class="boton peligro" type="submit">Eliminar</button>
+  </form>
+</div>
+{% endblock %}

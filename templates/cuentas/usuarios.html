@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block titulo %}Usuarios y roles{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+  <div>
+    <h1>Usuarios y roles</h1>
+    <div class="apagado" style="margin-top:4px">Cada persona accede solo a lo que necesita. Los cambios quedan en la bitácora.</div>
+  </div>
+</div>
+
+<div class="dos-columnas">
+  <div class="flexible">
+    <div class="contenedor-tabla">
+      <table class="tabla">
+        <thead><tr><th>Usuario</th><th>Nombre</th><th>Perfil</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody>
+        {% for p in perfiles %}
+          <tr>
+            <td>{{ p.usuario.username }}</td>
+            <td>{{ p.usuario.first_name }}</td>
+            <td>
+              {% if p.usuario_id == user.pk %}
+                <span class="etiqueta">{{ p.get_rol_display }}</span> <span class="apagado">(tú)</span>
+              {% else %}
+              <form method="post" action="{% url 'cuentas:usuario_cambiar' p.pk %}" style="display:flex;gap:6px">
+                {% csrf_token %}<input type="hidden" name="accion" value="rol">
+                <select name="rol" aria-label="Perfil de {{ p.usuario.username }}" style="height:34px">
+                  {% for valor, texto in roles %}<option value="{{ valor }}" {% if p.rol == valor %}selected{% endif %}>{{ texto }}</option>{% endfor %}
+                </select>
+                <button class="boton sec" style="height:34px;padding:0 12px" type="submit">Cambiar</button>
+              </form>
+              {% endif %}
+            </td>
+            <td>{% if p.usuario.is_active %}<span class="etiqueta">Activo</span>{% else %}<span class="etiqueta gris">Desactivado</span>{% endif %}</td>
+            <td>
+              {% if p.usuario_id != user.pk %}
+              <form method="post" action="{% url 'cuentas:usuario_cambiar' p.pk %}">
+                {% csrf_token %}
+                {% if p.usuario.is_active %}<input type="hidden" name="accion" value="desactivar"><button class="peligro" style="color:#b42318;font-weight:600;background:none;border:0;cursor:pointer;font:inherit" type="submit">Desactivar</button>
+                {% else %}<input type="hidden" name="accion" value="activar"><button style="color:#0f4c5c;font-weight:600;background:none;border:0;cursor:pointer;font:inherit" type="submit">Activar</button>{% endif %}
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="fija">
+    <form method="post" class="tarjeta" style="display:flex;flex-direction:column;gap:14px">
+      {% csrf_token %}
+      <p class="titulo-seccion">Nuevo usuario</p>
+      {% for campo in form %}
+        <div class="campo">
+          <label for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+          {{ campo }}
+          {{ campo.errors }}
+        </div>
+      {% endfor %}
+      <button class="boton" type="submit">Crear usuario</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

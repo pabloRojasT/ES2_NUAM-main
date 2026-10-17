@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block titulo %}Bitácora{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+  <div>
+    <h1>Bitácora de operaciones</h1>
+    <div class="apagado" style="margin-top:4px">Cada ingreso, modificación, eliminación y carga masiva, con usuario, fecha, hora y origen.</div>
+  </div>
+  <div class="etiqueta" style="border-radius:10px;padding:10px 14px;font-weight:400;font-size:13px;line-height:1.45;max-width:300px">
+    <strong>Solo lectura.</strong> Los registros no se pueden editar ni borrar, ni siquiera por un administrador de base de datos.
+  </div>
+</div>
+
+<form method="get" class="filtros">
+  <div class="campo"><label for="b-usuario">Usuario</label>
+    <select id="b-usuario" name="usuario"><option value="">Todos</option>
+      {% for u in usuarios %}<option value="{{ u.pk }}" {% if filtros.usuario == u.pk|stringformat:"s" %}selected{% endif %}>{{ u.get_full_name|default:u.username }}</option>{% endfor %}
+    </select></div>
+  <div class="campo"><label for="b-operacion">Operación</label>
+    <select id="b-operacion" name="operacion"><option value="">Todas</option>
+      {% for valor, texto in operaciones %}<option value="{{ valor }}" {% if filtros.operacion == valor %}selected{% endif %}>{{ texto }}</option>{% endfor %}
+    </select></div>
+  <div class="campo" style="min-width:130px"><label for="b-desde">Desde</label>
+    <input id="b-desde" type="text" name="desde" value="{{ filtros.desde }}" placeholder="dd-mm-aaaa"></div>
+  <div class="campo" style="min-width:130px"><label for="b-hasta">Hasta</label>
+    <input id="b-hasta" type="text" name="hasta" value="{{ filtros.hasta }}" placeholder="dd-mm-aaaa"></div>
+  <button class="boton sec" type="submit">Filtrar</button>
+</form>
+
+<div class="dos-columnas">
+  <div class="flexible">
+    <div class="contenedor-tabla">
+      <table class="tabla">
+        <thead><tr><th>Fecha y hora</th><th>Usuario</th><th>Operación</th><th>Registro afectado</th><th>Origen</th></tr></thead>
+        <tbody>
+        {% for r in pagina %}
+          <tr {% if seleccionado and r.pk == seleccionado.pk %}style="background:#e8f1f3"{% endif %}>
+            <td class="mono" style="font-size:12px"><a href="?ver={{ r.pk }}&usuario={{ filtros.usuario }}&operacion={{ filtros.operacion }}&desde={{ filtros.desde }}&hasta={{ filtros.hasta }}&pagina={{ pagina.number }}" style="text-decoration:none">{{ r.fecha|date:"d-m-Y H:i" }}</a></td>
+            <td>{{ r.usuario_nombre }}</td>
+            <td><span class="etiqueta {% if r.operacion == 'INTENTO_RECHAZADO' %}alerta{% elif r.operacion == 'ELIMINACION' %}aviso{% endif %}">{{ r.get_operacion_display }}</span></td>
+            <td><strong>{{ r.registro }}</strong></td>
+            <td>{{ r.get_origen_display }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="apagado" style="text-align:center;padding:40px">No hay operaciones con estos filtros.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="paginas">
+      <span class="pie-tabla">Página {{ pagina.number }} de {{ pagina.paginator.num_pages }} · {{ pagina.paginator.count }} operaciones</span>
+      {% if pagina.has_previous %}<a href="?pagina={{ pagina.previous_page_number }}&usuario={{ filtros.usuario }}&operacion={{ filtros.operacion }}&desde={{ filtros.desde }}&hasta={{ filtros.hasta }}">← Anterior</a>{% endif %}
+      {% if pagina.has_next %}<a href="?pagina={{ pagina.next_page_number }}&usuario={{ filtros.usuario }}&operacion={{ filtros.operacion }}&desde={{ filtros.desde }}&hasta={{ filtros.hasta }}">Siguiente →</a>{% endif %}
+    </div>
+  </div>
+
+  {% if seleccionado %}
+  <aside class="tarjeta" style="width:300px;max-width:100%;display:flex;flex-direction:column;gap:10px">
+    <p class="titulo-seccion">Detalle de la operación</p>
+    <div style="font-size:17px;font-weight:600">{{ seleccionado.get_operacion_display }} · {{ seleccionado.registro }}</div>
+    <div style="font-size:13px;line-height:1.7;color:var(--tinta-suave)">
+      <div><strong>Fecha y hora:</strong> {{ seleccionado.fecha|date:"d-m-Y H:i:s" }}</div>
+      <div><strong>Usuario:</strong> {{ seleccionado.usuario_nombre }}</div>
+      <div><strong>Origen:</strong> {{ seleccionado.get_origen_display }}</div>
+    </div>
+    <div style="background:var(--fondo);border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.55">{{ seleccionado.detalle|default:"Sin detalle." }}</div>
+    <small class="apagado">Sin botones de edición: es un registro de solo lectura.</small>
+  </aside>
+  {% endif %}
+</div>
+{% endblock %}
